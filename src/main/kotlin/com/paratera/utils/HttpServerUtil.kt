@@ -1,12 +1,15 @@
 package com.paratera.utils
 
-import io.vertx.core.http.HttpServerRequest
+import com.paratera.entity.BaseEntity
+import com.paratera.entity.User
 import io.vertx.core.http.HttpServerResponse
+import io.vertx.core.json.Json
+import io.vertx.core.json.JsonArray
 import io.vertx.ext.web.Route
-import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.experimental.launch
+import kotlin.streams.toList
 
 
 fun RoutingContext.getParam(key: String, required: Boolean) : String? {
@@ -42,8 +45,14 @@ fun RoutingContext.end(string: String) {
 
 fun RoutingContext.endWithJson(jsonString: String) {
     val response = this.response()
-    response.putHeader("content-type", "application/json")
+    response.putHeader("content-type", "application/json; charset=utf-8")
     response.end(jsonString)
+}
+
+fun RoutingContext.endWithJson(obj: Any) {
+    val response = this.response()
+    response.putHeader("content-type", "application/json; charset=utf-8")
+    response.end(Json.encodePrettily(obj))
 }
 
 fun RoutingContext.endWithHtml(textString: String) {
