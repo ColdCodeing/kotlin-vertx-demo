@@ -11,6 +11,7 @@ import io.vertx.kotlin.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
+import javafx.beans.binding.Bindings.isNotEmpty
 
 class DemoHttpVerticle : CoroutineVerticle() {
 
@@ -23,13 +24,6 @@ class DemoHttpVerticle : CoroutineVerticle() {
     lateinit var postgreSQLClient: AsyncSQLClient
 
     suspend override fun start() {
-//        var postgreSQLClientConfig = json {
-//            obj({
-//                "username" to "mm"
-//                "password" to "111111"
-//                "database" to "datatest"
-//            })
-//        }
         var postgreSQLClientConfig = JsonObject()
         postgreSQLClientConfig.put("username", "mm")
         postgreSQLClientConfig.put("password", "111111")
@@ -56,11 +50,7 @@ class DemoHttpVerticle : CoroutineVerticle() {
         val username = routingContext.getParam("name", false)
         val password = routingContext.getParam("pass", false)
         var resultSet = postgreSQLClient.query("select \"username\", \"password\" from \"user\"")
-        var users: List<User> = ArrayList();
-        if (resultSet.rows.isNotEmpty()) {
-            users = resultSet.getRows().map { User().fromJson(it) }.toList()
-            println(users)
-        }
+        var users: List<User> = resultSet.getRows()?.map { User().fromJson(it) }!!.toList();
         routingContext.endWithJson(users)
     }
 }
